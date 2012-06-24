@@ -21,7 +21,16 @@ public class CPF implements Serializable {
 	 * 
 	 * @param cpf
 	 */
-	public CPF(String cpfString) {
+	public CPF(String cpfString) throws Exception{
+		
+		cpfString = cpfString.replace(".", "").replace("-","");
+		if(cpfString.length() != 11){
+			throw new Exception("Formato irregular de CPF");
+		}else{
+			this.numero = Long.parseLong(cpfString.substring(0, 9));
+			this.digito = Integer.parseInt(cpfString.substring(9,11));
+		}
+		
 		
 	}
 	
