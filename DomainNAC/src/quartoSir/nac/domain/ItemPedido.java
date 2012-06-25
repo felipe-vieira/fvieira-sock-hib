@@ -27,6 +27,7 @@ public class ItemPedido implements Serializable{
 	}
 	
 	public ItemPedido(Pedido pedido, Produto produto) {
+		this.id = new ItemPedidoPK(pedido, produto);
 		this.pedido = pedido;
 		this.produto = produto;
 	}

@@ -18,6 +18,11 @@ public class Pedido implements Serializable {
 
 	private Cliente cliente;
 	
+	public Pedido() {};
+	
+	public Pedido(Cliente cliente){
+		this.cliente = cliente;		
+	}
 	
 	public Long getId() {
 		return id;

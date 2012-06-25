@@ -11,7 +11,7 @@ public class Produto implements Serializable{
 	
 	private String descricao;
 	
-	private BigDecimal BigDecimal;
+	private BigDecimal preco;
 	
 	private Integer estoque;
 	
@@ -28,11 +28,11 @@ public class Produto implements Serializable{
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	public BigDecimal getBigDecimal() {
-		return BigDecimal;
+	public BigDecimal getPreco() {
+		return preco;
 	}
-	public void setBigDecimal(BigDecimal bigDecimal) {
-		BigDecimal = bigDecimal;
+	public void setPreco(BigDecimal preco) {
+		this.preco = preco;
 	}
 	public Integer getEstoque() {
 		return estoque;
