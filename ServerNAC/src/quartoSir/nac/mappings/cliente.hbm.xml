@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+	<class name="quartoSir.nac.domain.Cliente" table="TB_CLIENTE">
+		<id name="id" column="CLI_ID">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="nome" column="CLI_NOM" not-null="true"/>
+
+		
+		<component name="cpf" class ="quartoSir.nac.domain.CPF">
+			<property name="numero" column="CLI_CPF_NUM" not-null="true"/>
+			<property name="digito" column="CLI_CPF_DIG" not-null="true"/>
+		</component>
+		
+		
+	</class>
+</hibernate-mapping>

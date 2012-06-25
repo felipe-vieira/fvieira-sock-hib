@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+	<class name="quartoSir.nac.domain.Pedido" table="TB_PEDIDO">
+		<id name="id" column="PED_ID">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="dataEmissao" column="PED_DT_EMS" not-null="true"/>
+		<property name="dataProcessamento" column="PED_DT_PRO" not-null="false"/>
+		<property name="totalPedido" column="PED_TOT" not-null="true"/>
+		<many-to-one name="cliente" column="CLI_ID" not-null="true"/>
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+	<class name="quartoSir.nac.domain.ItemPedido" table="TB_ITEM_PEDIDO">
+		<composite-id name="id" class="quartoSir.nac.domain.ItemPedidoPK">
+			<key-many-to-one name="pedido" class="quartoSir.nac.domain.Pedido" column="PED_ID"/>
+			<key-many-to-one name="produto" class="quartoSir.nac.domain.Produto" column="PRD_ID"/>
+		</composite-id>
+				
+		<property name="quantidade" column="ITM_PED_QTD" not-null="true"/>
+		<property name="precoUnitario" column="ITM_PED_PRC" not-null="true"/>
+		<property name="totalDoItem" column="ITM_PED_TOT" not-null="true"/>
+		<property name="desconto" column="ITM_PED_DSC" not-null="true"/>
+	
+		
+	</class>
+</hibernate-mapping>

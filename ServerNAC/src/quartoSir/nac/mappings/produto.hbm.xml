@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+	<class name="quartoSir.nac.domain.Produto" table="TB_PRODUTO">
+	
+		<id name="id" column="PRO_ID">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="descricao" column="PRO_DES" not-null="true"/>
+		<property name="preco" column="PRO_PRC" not-null="true"/>
+		<property name="estoque" column="PRO_EST" not-null="false"/>
+
+	</class>
+</hibernate-mapping>
