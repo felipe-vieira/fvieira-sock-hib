@@ -36,7 +36,6 @@ public class Run {
 			if(socket != null && socket.isBound()){
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				//out = new PrintWriter(socket.getOutputStream(),true);
-				out = new ObjectOutputStream(socket.getOutputStream());
 			}
 			
 		}catch(IOException ex){
@@ -48,6 +47,7 @@ public class Run {
 	
 	public static void send(Object obj){
 		try{
+			out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(obj);
 			out.flush();
 		}catch (IOException e) {

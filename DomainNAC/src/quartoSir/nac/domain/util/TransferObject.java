@@ -22,6 +22,4 @@ public class TransferObject implements Serializable {
 		this.value = value;
 	}
 	
-	
-	
 }

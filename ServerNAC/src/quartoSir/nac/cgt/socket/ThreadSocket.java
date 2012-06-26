@@ -3,10 +3,12 @@ package quartoSir.nac.cgt.socket;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import quartoSir.nac.cgt.bo.ClienteBO;
 import quartoSir.nac.domain.Cliente;
+import quartoSir.nac.domain.util.ReturnObject;
 import quartoSir.nac.domain.util.TransferObject;
 
 public class ThreadSocket implements Runnable {
@@ -28,12 +30,14 @@ public class ThreadSocket implements Runnable {
 	 */
 	private void handleCommands() {
 		ObjectInputStream in;
-		PrintWriter out;
+		ObjectOutputStream out;
 		Object obj = null;
 				
 		try {
 			in = new ObjectInputStream(this.clientSocket.getInputStream());
-			out = new PrintWriter(this.clientSocket.getOutputStream(),true);
+			
+			
+			ReturnObject retorno = null;
 			
 			if(this.clientSocket != null && this.clientSocket.isBound()){
 				
@@ -44,10 +48,12 @@ public class ThreadSocket implements Runnable {
 					}
 					
 					if(obj instanceof TransferObject){
-						this.trataObjetoRecebido((TransferObject) obj);
+						retorno = this.trataObjetoRecebido((TransferObject) obj);
 					}
 					
-					out.println("tudocerto");
+					out = new ObjectOutputStream(this.clientSocket.getOutputStream());
+					out.writeObject(retorno);
+					out.flush();
 					
 					in.close();
 					
@@ -68,13 +74,22 @@ public class ThreadSocket implements Runnable {
 	}
 	
 	
-	public void trataObjetoRecebido(TransferObject to){
+	public ReturnObject trataObjetoRecebido(TransferObject to){
 		System.out.println("Action: "+ to.getAction());
 		
+		//Chama os métodos do BO do cliente
 		if(to.getValue() instanceof Cliente){
-			Cliente c = (Cliente) to.getValue();
-			System.out.println(c.getNome());
+			ClienteBO bo = new ClienteBO();
+			
+			Cliente cli = (Cliente) to.getValue();
+			
+			if(to.getAction().equals("cadastro")){
+				return bo.cadastraCliente(cli);
+			}
+			
 		}
+		
+		return null;
 		
 	}
 	
