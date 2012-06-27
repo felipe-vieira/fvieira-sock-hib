@@ -7,7 +7,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import quartoSir.nac.cgt.bo.ClienteBO;
+import quartoSir.nac.cgt.bo.ProdutoBO;
 import quartoSir.nac.domain.Cliente;
+import quartoSir.nac.domain.Produto;
 import quartoSir.nac.domain.util.ReturnObject;
 import quartoSir.nac.domain.util.TransferObject;
 
@@ -76,17 +78,37 @@ public class ThreadSocket implements Runnable {
 	
 	public ReturnObject trataObjetoRecebido(TransferObject to){
 		System.out.println("Action: "+ to.getAction());
+		String action = to.getAction();
 		
 		//Chama os métodos do BO do cliente
 		if(to.getValue() instanceof Cliente){
 			ClienteBO bo = new ClienteBO();
-			
 			Cliente cli = (Cliente) to.getValue();
 			
-			if(to.getAction().equals("cadastro")){
-				return bo.cadastraCliente(cli);
+			if(action.equals("cadastro")){
+				return bo.salvaCliente(cli);
+			}else if(action.equals("pesquisaCPF")){
+				return bo.pesquisaClienteCPF(cli);
+			}else if(action.equals("pesquisaID")){
+				return bo.pesquisaClienteID(cli);
+			}else if(action.equals("pesquisaNome")){
+				return bo.pesquisaClienteNome(cli);
 			}
 			
+		}
+		
+		//Chama os métodos do BO do produto
+		if(to.getValue() instanceof Produto){
+			ProdutoBO bo = new ProdutoBO();
+			Produto prod = (Produto) to.getValue();
+			
+			if(action.equals("cadastro")){
+				return bo.salvaProduto(prod);
+			}else if(action.equals("pesquisaID")){
+				return bo.pesquisaProdutoID(prod);
+			}else if(action.equals("pesquisaDescricao")){
+				return bo.pesquisaProdutoDescricao(prod);
+			}
 		}
 		
 		return null;

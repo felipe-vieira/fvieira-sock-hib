@@ -27,8 +27,12 @@ public class CPF implements Serializable {
 		if(cpfString.length() != 11){
 			throw new Exception("Formato irregular de CPF");
 		}else{
-			this.numero = Long.parseLong(cpfString.substring(0, 9));
-			this.digito = Integer.parseInt(cpfString.substring(9,11));
+			try{
+				this.numero = Long.parseLong(cpfString.substring(0, 9));
+				this.digito = Integer.parseInt(cpfString.substring(9,11));
+			}catch(NumberFormatException ex){
+				throw new Exception("Apenas números, \".\" e \"-\"");
+			}
 		}
 		
 		

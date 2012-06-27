@@ -16,9 +16,7 @@ public class ComunicacaoServidor {
 		
 		SocketUtil socketUtil = new SocketUtil();
 		socketUtil.conectaSocket(Bootstrap.enderecoServidor);
-		System.out.println("vai enviar");
 		socketUtil.enviaObjeto(to);
-		System.out.println("enviou");
 		ro = socketUtil.recebeObjeto();
 		
 		return ro;

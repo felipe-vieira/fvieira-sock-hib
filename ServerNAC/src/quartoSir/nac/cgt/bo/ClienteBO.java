@@ -3,6 +3,7 @@ package quartoSir.nac.cgt.bo;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import quartoSir.nac.cgd.GenericDAO;
@@ -19,11 +20,17 @@ public class ClienteBO {
 		this.dao = new GenericDAO();
 	}
 	
-	public ReturnObject cadastraCliente(Cliente cli) {
+	/**
+	 * Realiza as validações e persiste os objetos no banco de dados.
+	 * @param cli
+	 * @return ReturnObject indica o status e a mensagem da operação
+	 */
+	public ReturnObject salvaCliente(Cliente cli) {
 		
 		ReturnObject retorno = new ReturnObject();
 		
-		Transaction t = dao.getSession().beginTransaction();
+		Session session = dao.getSession(); 
+		Transaction t = session.beginTransaction();
 		
 		try{
 			//Verifica se existem campos vazios
@@ -32,7 +39,7 @@ public class ClienteBO {
 				if(cli.getCpf() != null){
 					
 					//Verifica se já existe usuario com o CPF informado
-					Query query = dao.getSession().createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito");
+					Query query = session.createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito");
 					query.setLong("numero", cli.getCpf().getNumero());
 					query.setInteger("digito", cli.getCpf().getDigito());
 					
@@ -67,11 +74,134 @@ public class ClienteBO {
 			e.printStackTrace();
 		}
 		
-		return retorno;
-		
-		
-		
+		return retorno;		
 	}
+	
+	/**
+	 * Pesquisa o cliente por CPF
+	 * @param cli
+	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 */
+	public ReturnObject pesquisaClienteCPF(Cliente cli){
+		ReturnObject retorno = new ReturnObject();
+		
+		Session session = dao.getSession(); 
+		Transaction t = session.beginTransaction(); 
+		
+		try{
+			
+			if(cli.getCpf() != null){
+				
+				Query query = session.createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito");
+				query.setLong("numero", cli.getCpf().getNumero());
+				query.setInteger("digito", cli.getCpf().getDigito());
+				
+				Cliente resultado = (Cliente) dao.queryUnique(query);
+								
+				
+				if(resultado != null){
+					retorno.setObj(resultado);
+				}else{
+					retorno.setMensagem("Nenhum cliente encontrado com esse cpf");
+				}
+				
+				t.commit();
+				
+			}else{
+				retorno.setMensagem("ERRO: CPF não pode ser vazio para essa consulta");
+				t.rollback();
+			}
+			
+		}catch(Exception e){
+			t.rollback();
+			e.printStackTrace();
+			
+		}
+		
+		return retorno;		
+	}
+	
+	
+	/**
+	 * Pesquisa o cliente por ID
+	 * @param cli
+	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 */
+	public ReturnObject pesquisaClienteID(Cliente cli){
+		ReturnObject retorno = new ReturnObject();
+		
+		Session session = dao.getSession(); 
+		Transaction t = session.beginTransaction(); 
+		
+		try{
+			
+			if(cli.getId() != null){
+				
+				Cliente resultado = (Cliente) dao.getById(Cliente.class, cli.getId());
+				
+				
+				if(resultado != null){
+					retorno.setObj(resultado);
+				}else{
+					retorno.setMensagem("Nenhum cliente encontrado com esse ID");
+				}
+				
+				t.commit();
+				
+			}else{
+				retorno.setMensagem("ERRO: ID não pode ser vazio para essa consulta");
+				t.rollback();
+			}
+			
+		}catch(Exception e){
+			t.rollback();
+			e.printStackTrace();
+			
+		}
+		return retorno;		
+	}
+	
+	/**
+	 * Pesquisa o cliente por Nome
+	 * @param cli
+	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 */
+	public ReturnObject pesquisaClienteNome(Cliente cli){
+		ReturnObject retorno = new ReturnObject();
+		
+		Session session = dao.getSession(); 
+		Transaction t = session.beginTransaction(); 
+		
+		try{
+			
+			if(cli.getNome() != null && !cli.getNome().equals("")){
+				
+				Query query = session.createQuery("FROM Cliente WHERE nome like :nome ORDER BY nome");
+				query.setString("nome", cli.getNome()+"%");
+				
+				List<Cliente> resultados = (List<Cliente>) dao.queryList(query);
+				
+				if(resultados != null && resultados.size() > 0){
+					retorno.setLista(resultados);
+				}else{
+					retorno.setMensagem("Nenhum cliente encontrado com esse NOME");
+				}
+				
+				t.commit();
+				
+			}else{
+				retorno.setMensagem("ERRO: NOME não pode ser vazio para essa consulta");
+				t.rollback();
+			}
+			
+		}catch(Exception e){
+			t.rollback();
+			e.printStackTrace();
+			
+		}
+		return retorno;		
+	}
+	
 	
 	
 }

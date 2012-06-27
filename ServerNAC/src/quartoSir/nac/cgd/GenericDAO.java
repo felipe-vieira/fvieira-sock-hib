@@ -33,6 +33,15 @@ public class GenericDAO {
 	}
 	
 	/**
+	 * Salva um objeto no banco de dados e retorna seu ID
+	 * @param obj
+	 * @return Serializable
+	 */
+	public void saveOrUpdate(Object obj){
+		this.session.saveOrUpdate(obj);
+	}
+	
+	/**
 	 * Recebe uma query e retorna o resultado em lista
 	 * @param query
 	 * @return List
@@ -41,6 +50,33 @@ public class GenericDAO {
 		return query.list();			
 	}
 	
+	
+	/**
+	 * Recebe uma query e retorna um unico resultado
+	 * @param query
+	 * @return Objeto
+	 */
+	public Object queryUnique(Query query){
+		return query.uniqueResult();			
+	}
+	
+	/**
+	 * Recebe uma id e retorna o objeto.
+	 * @param classe
+	 * @param id
+	 * @return Objeto
+	 */
+	public Object getById(Class classe, Serializable id){
+		return this.session.get(classe, id);
+	}
+	
+	/**
+	 * Atualiza um objeto
+	 * @param obj
+	 */
+	public void update(Object obj){
+		this.update(obj);
+	}
 		
 	
 	

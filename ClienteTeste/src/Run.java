@@ -16,7 +16,7 @@ public class Run {
 	public static void main(String[] args) {
 		openSocket("127.0.0.1");
 		
-		TransferObject to = new TransferObject();
+/*		TransferObject to = new TransferObject();
 		Cliente cli = new Cliente();
 		cli.setNome("Jonas");
 		
@@ -25,7 +25,7 @@ public class Run {
 		
 		send(to);
 		read();
-
+*/
 		
 	}
 	

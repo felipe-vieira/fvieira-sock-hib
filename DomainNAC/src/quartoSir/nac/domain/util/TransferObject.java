@@ -9,6 +9,11 @@ public class TransferObject implements Serializable {
 	private String action;
 	private Serializable value;
 	
+	public TransferObject(String action, Serializable value) {
+		this.action = action;
+		this.value = value;
+	}
+	
 	public String getAction() {
 		return action;
 	}
