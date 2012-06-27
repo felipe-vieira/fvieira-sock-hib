@@ -93,6 +93,10 @@ public class ThreadSocket implements Runnable {
 				return bo.pesquisaClienteID(cli);
 			}else if(action.equals("pesquisaNome")){
 				return bo.pesquisaClienteNome(cli);
+			}else if(action.equals("atualiza")){
+				return bo.atualizaCliente(cli);
+			}else if(action.equals("exclui")){
+				return bo.excluiCliente(cli);
 			}
 			
 		}
@@ -108,7 +112,10 @@ public class ThreadSocket implements Runnable {
 				return bo.pesquisaProdutoID(prod);
 			}else if(action.equals("pesquisaDescricao")){
 				return bo.pesquisaProdutoDescricao(prod);
+			}else if(action.equals("atualiza")){
+				return bo.salvaProduto(prod);
 			}
+			
 		}
 		
 		return null;

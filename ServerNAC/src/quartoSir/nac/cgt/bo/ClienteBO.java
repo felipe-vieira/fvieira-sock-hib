@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 import quartoSir.nac.cgd.GenericDAO;
 import quartoSir.nac.domain.CPF;
 import quartoSir.nac.domain.Cliente;
+import quartoSir.nac.domain.Pedido;
 import quartoSir.nac.domain.util.ReturnObject;
 
 public class ClienteBO {
@@ -201,7 +202,84 @@ public class ClienteBO {
 		}
 		return retorno;		
 	}
+
+	
+	/**
+	 * Atualiza o cliente.
+	 * @param cli
+	 * @return ReturnObject indica o status e a mensagem da operação 
+	 */
+	public ReturnObject atualizaCliente(Cliente cli) {
+		
+		Session session = dao.getSession();
+		Transaction t = session.beginTransaction();
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
+		
+		try{
+			
+			PedidoBO pedidoBO = new PedidoBO();
+			List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
+			
+			if(pedidos != null && pedidos.size() > 0){
+				Cliente cliAntigo = (Cliente) dao.getById(Cliente.class, cli.getId());
+				
+				if(!cliAntigo.getCpf().equals(cli.getCpf())){
+					retorno.setMensagem("ERRO: Não é possível alterar o CPF de um cliente que já possui pedidos.");
+					t.rollback();
+					return retorno;
+				}		
+			}
+			
+			dao.update(cli);						
+			t.commit();
+					
+			retorno.setSucesso(true);
+			retorno.setMensagem("Cliente alterado");
+			
+		}catch(Exception e){
+			t.rollback();
+		}
+		 
+		return retorno;
+		
+	}
 	
 	
+	/**
+	 * Deleta o cliente.
+	 * @param cli
+	 * @return ReturnObject indica o status e a mensagem da operação 
+	 */
+	public ReturnObject excluiCliente(Cliente cli) {
+		
+		Session session = dao.getSession();
+		Transaction t = session.beginTransaction();
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
+		
+		try{
+			PedidoBO pedidoBO = new PedidoBO();
+			List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
+			
+			if(pedidos != null && pedidos.size() > 0){
+				retorno.setMensagem("ERRO: Não é excluir um cliente que já possui pedidos.");
+				t.rollback();
+			}else{
+				dao.delete(cli);
+				t.commit();
+				retorno.setSucesso(true);
+				retorno.setMensagem("Cliente excluido com sucesso!");
+			}
+			
+		}catch(Exception e){
+			t.rollback();
+		}
+		 
+		return retorno;
+		
+	}
 	
 }

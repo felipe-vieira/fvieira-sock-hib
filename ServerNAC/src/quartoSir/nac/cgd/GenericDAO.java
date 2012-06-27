@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import quartoSir.nac.domain.Cliente;
 import quartoSir.nac.util.cgd.DBUtil;
 
 public class GenericDAO {
@@ -33,10 +34,9 @@ public class GenericDAO {
 	}
 	
 	/**
-	 * Salva um objeto no banco de dados e retorna seu ID
-	 * @param obj
-	 * @return Serializable
-	 */
+	 * Salva ou atualiza um objeto no banco de dados
+	 * * @param obj
+	 /
 	public void saveOrUpdate(Object obj){
 		this.session.saveOrUpdate(obj);
 	}
@@ -75,7 +75,15 @@ public class GenericDAO {
 	 * @param obj
 	 */
 	public void update(Object obj){
-		this.update(obj);
+		this.session.update(obj);
+	}
+
+	/**
+	 * Delete um objeto
+	 * @param cli
+	 */
+	public void delete(Object obj) {
+		this.session.delete(obj);
 	}
 		
 	
