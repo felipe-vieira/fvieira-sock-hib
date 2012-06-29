@@ -211,6 +211,9 @@ public class ClienteBO {
 	 */
 	public ReturnObject atualizaCliente(Cliente cli) {
 		
+		PedidoBO pedidoBO = new PedidoBO();
+		List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
+		
 		Session session = dao.getSession();
 		Transaction t = session.beginTransaction();
 		
@@ -218,10 +221,7 @@ public class ClienteBO {
 		retorno.setSucesso(false);
 		
 		try{
-			
-			PedidoBO pedidoBO = new PedidoBO();
-			List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
-			
+					
 			if(pedidos != null && pedidos.size() > 0){
 				Cliente cliAntigo = (Cliente) dao.getById(Cliente.class, cli.getId());
 				
@@ -254,16 +254,16 @@ public class ClienteBO {
 	 */
 	public ReturnObject excluiCliente(Cliente cli) {
 		
+		PedidoBO pedidoBO = new PedidoBO();
+		List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
+		
 		Session session = dao.getSession();
 		Transaction t = session.beginTransaction();
 		
 		ReturnObject retorno = new ReturnObject();	
 		retorno.setSucesso(false);
 		
-		try{
-			PedidoBO pedidoBO = new PedidoBO();
-			List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
-			
+		try{			
 			if(pedidos != null && pedidos.size() > 0){
 				retorno.setMensagem("ERRO: Não é excluir um cliente que já possui pedidos.");
 				t.rollback();

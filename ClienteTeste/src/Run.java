@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Date;
+
 
 import quartoSir.nac.domain.Cliente;
 import quartoSir.nac.domain.util.TransferObject;
@@ -14,6 +16,11 @@ public class Run {
 	private static  Socket socket;
 	
 	public static void main(String[] args) {
+		
+		
+		Date teste  = new Date();
+		System.out.println(teste);
+		/*
 		openSocket("127.0.0.1");
 		
 /*		TransferObject to = new TransferObject();

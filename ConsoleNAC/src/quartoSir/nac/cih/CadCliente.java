@@ -24,14 +24,16 @@ public class CadCliente {
 			String comando = "";
 			//While que faz o formulário aparecer cada vez que uma execução terminar
 			
-			while(!comando.equals("3")){
+			while(!comando.equals("5")){
 				
 				System.out.println("");
 			
 				System.out.println("> Selecione uma opção: ");
 				System.out.println("> 1 - Cadastrar novo cliente");
 				System.out.println("> 2 - Listar cliente(s)");
-				System.out.println("> 3 - Voltar");
+				System.out.println("> 3 - Alterar cliente");
+				System.out.println("> 4 - Excluir cliente");
+				System.out.println("> 5 - Voltar");
 		
 				System.out.print("> ");
 				
@@ -47,7 +49,11 @@ public class CadCliente {
 					cadastrarCliente();
 				}else if(comando.equals("2")){
 					listarCliente();
-				}else if(!comando.equals("3")){
+				}else if(comando.equals("3")){
+					alterarCliente();
+				}else if(comando.equals("4")){
+					excluirCliente();
+				}else if(!comando.equals("5")){
 					System.out.println("");
 					System.out.println("> Opção inválida! Insira um valor de 1 a 5");
 				}
@@ -246,127 +252,136 @@ public class CadCliente {
 		}
 		
 		
-		public Cliente alterarCliente(){
+		public void alterarCliente(){
 	
 			Cliente cli = new Cliente();
-			BufferedReader reader;
 			String comando = "";
-			CPF cpf;
+			CPF cpf = null;
+			Boolean sucesso = false;
 			
-			//Solicita ao usu�rio o ID do cliente para altera��o
+			while(!sucesso){
 			
-			System.out.println("");
-			System.out.println("> Digite o ID do cliente que deseja alterar:");
-			System.out.print("> ");
-			
-			reader = new BufferedReader(new InputStreamReader(System.in));
-			
-			try{
-				comando = reader.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			//Solicita ao usu�rio qual coluna deseja alterar
-			
-			System.out.println("");
-			System.out.println("> Selecione qual informa��o deste cliente voc� deseja alterar:");
-			System.out.println("> 1) Nome");
-			System.out.println("> 2) CPF");
-			System.out.print("> ");
-			
-			reader = new BufferedReader(new InputStreamReader(System.in));
-			
-			try{
-				comando = reader.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			if(comando.equals("1")){
-				
-				//Solicita ao usu�rio o novo nome do cliente
+				//Solicita ao usu�rio o ID do cliente para altera��o
 				
 				System.out.println("");
-				System.out.println("> Digite o novo nome do cliente: ");
+				System.out.println("> Digite o ID do cliente que deseja alterar:");
 				System.out.print("> ");
 				
-				reader = new BufferedReader(new InputStreamReader(System.in));
-				
 				try{
-					cli.setNome(reader.readLine());
+					comando = reader.readLine();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}else if(comando.equals("2")){
 				
-				//Solicita ao usu�rio o novo CPF do cliente
+				
+				//Solicita ao usu�rio qual coluna deseja alterar
 				
 				System.out.println("");
-				System.out.println("> Digite o novo CPF do cliente: ");
+				System.out.println("> Selecione qual informa��o deste cliente voc� deseja alterar:");
+				System.out.println("> 1) Nome");
+				System.out.println("> 2) CPF");
 				System.out.print("> ");
 				
-				reader = new BufferedReader(new InputStreamReader(System.in));
-				
-				//Tratamento para CPF inválido
-				
 				try{
-					cpf = new CPF(reader.readLine());
-				}catch (Exception e) {
-					System.out.println("");
-					System.out.println("> CPF inv�lido!");
-					return null;
+					comando = reader.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 				
-				cli.setCpf(cpf);
+				if(comando.equals("1")){
+					
+					//Solicita ao usu�rio o novo nome do cliente
+					
+					System.out.println("");
+					System.out.println("> Digite o novo nome do cliente: ");
+					System.out.print("> ");
+					
+					try{
+						cli.setNome(reader.readLine());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}else if(comando.equals("2")){
+					
+					//Solicita ao usu�rio o novo CPF do cliente
+					
+					System.out.println("");
+					System.out.println("> Digite o novo CPF do cliente: ");
+					System.out.print("> ");
+					
+					//Tratamento para CPF inválido
+					
+					while(cpf == null){
+						try{
+							comando = reader.readLine();
+							cpf = new CPF(comando);
+						}catch (Exception e) {
+							System.out.println("");
+							System.out.println("> CPF inválido!, digite novamente: ");
+						}
+					}
+					
+					
+					
+				//Tratamento para opção incorreta
+					
+				}else{
+					System.out.println("");
+					System.out.println("> Mensagem inválida! Insira um valor de 1 a 2");
+	
+				}
 				
-			//Tratamento para opção incorreta
+				TransferObject to = new TransferObject("atualiza",cli);	
+				ReturnObject ro = ComunicacaoServidor.enviaDados(to);
 				
-			}else{
+				if(ro!=null){
+					sucesso = ro.getSucesso();
+					System.out.println(ro.getMensagem());
+				}
+				
 				System.out.println("");
-				System.out.println("> Mensagem inválida! Insira um valor de 1 a 2");
-				return null;
+				System.out.println("> cliente " +cli.getId()+" alterado com sucesso!");
+				
 			}
-			
-			//PARTE DO FELIPE
-			
-			System.out.println("");
-			System.out.println("> cliente " +cli.getId()+" alterado com sucesso!");
-			
-			return cli;
-			
 		}
 		
-		public Cliente excluirCliente(){
+		
+		public void excluirCliente(){
 			
-			Cliente cli = new Cliente();
-			BufferedReader reader;
-			String comando = "";
 			
-			//Solicita ao usu�rio o ID do cliente para exclus�o
+  			Boolean sucesso = false;
 			
-			System.out.println("");
-			System.out.println("> Digite o ID do cliente que deseja excluir:");
-			System.out.print("> ");
+			while(!sucesso){
+	  			Cliente cli = new Cliente();
+				String comando = "";
+				
+				//Solicita ao usu�rio o ID do cliente para exclus�o
+				
+				System.out.println("");
+				System.out.println("> Digite o ID do cliente que deseja excluir:");
+				System.out.print("> ");
 			
-			reader = new BufferedReader(new InputStreamReader(System.in));
-			
-			try{
-				comando = reader.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			cli.setId(Long.valueOf(comando));
-			
-			//PARTE DO FELIPE
-			
-			System.out.println("");
-			System.out.println("> Cliente " +cli.getId()+" exclu�do com sucesso!");
-			
-			return cli;
-			
+				try{
+					comando = reader.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				cli.setId(Long.valueOf(comando));
+				
+				TransferObject to = new TransferObject("exclui",cli);
+				ReturnObject ro = ComunicacaoServidor.enviaDados(to);
+				
+				if(ro!=null){
+					sucesso = ro.getSucesso();
+					System.out.println(ro.getMensagem());
+				}
+				
+				System.out.println("");
+				System.out.println("> Cliente " +cli.getId()+" exclu�do com sucesso!");
+				
 		}
+	}
 }
 	
 

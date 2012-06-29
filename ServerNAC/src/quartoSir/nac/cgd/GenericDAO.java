@@ -35,8 +35,8 @@ public class GenericDAO {
 	
 	/**
 	 * Salva ou atualiza um objeto no banco de dados
-	 * * @param obj
-	 /
+	 *  @param obj
+	 */
 	public void saveOrUpdate(Object obj){
 		this.session.saveOrUpdate(obj);
 	}

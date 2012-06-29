@@ -113,7 +113,9 @@ public class ThreadSocket implements Runnable {
 			}else if(action.equals("pesquisaDescricao")){
 				return bo.pesquisaProdutoDescricao(prod);
 			}else if(action.equals("atualiza")){
-				return bo.salvaProduto(prod);
+				return bo.atualizaProduto(prod);
+			}else if(action.equals("exclui")){
+				return bo.excluiProduto(prod);
 			}
 			
 		}

@@ -18,6 +18,8 @@ public class Pedido implements Serializable {
 
 	private Cliente cliente;
 	
+	private Integer qtdProdutos;
+	
 	public Pedido() {};
 	
 	public Pedido(Cliente cliente){
@@ -64,6 +66,13 @@ public class Pedido implements Serializable {
 		this.cliente = cliente;
 	}
 
+	public Integer getQtdProdutos() {
+		return qtdProdutos;
+	}
+
+	public void setQtdProdutos(Integer qtdProdutos) {
+		this.qtdProdutos = qtdProdutos;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

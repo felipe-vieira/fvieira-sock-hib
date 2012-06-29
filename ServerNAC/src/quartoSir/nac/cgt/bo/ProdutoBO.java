@@ -9,6 +9,8 @@ import org.hibernate.Transaction;
 
 import quartoSir.nac.cgd.GenericDAO;
 import quartoSir.nac.domain.Cliente;
+import quartoSir.nac.domain.ItemPedido;
+import quartoSir.nac.domain.Pedido;
 import quartoSir.nac.domain.Produto;
 import quartoSir.nac.domain.util.ReturnObject;
 
@@ -145,6 +147,74 @@ public class ProdutoBO {
 			
 		}
 		return retorno;		
+	}
+
+	
+	/**
+	 * Atualiza o produto.
+	 * @param prod
+	 * @return ReturnObject indica o status e a mensagem da operação 
+	 */
+	public ReturnObject atualizaProduto(Produto prod) {
+		
+		Session session = dao.getSession();
+		Transaction t = session.beginTransaction();
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
+		
+		try{
+			
+			ItemPedidoBO itemPedidoBO = new ItemPedidoBO();
+			List<ItemPedido> itensPedido = itemPedidoBO.listaItensPedidoProduto(prod);
+			
+			if(itensPedido != null && itensPedido.size() > 0){
+				Produto prodAntigo = (Produto) dao.getById(Produto.class, prod.getId());	
+			}
+			
+			dao.update(prod);						
+			t.commit();
+					
+			retorno.setSucesso(true);
+			retorno.setMensagem("Produto alterado");
+			
+		}catch(Exception e){
+			t.rollback();
+		}
+		 
+		return retorno;
+		
+	}
+	
+	
+	public ReturnObject excluiProduto(Produto prod) {
+		
+		Session session = dao.getSession();
+		Transaction t = session.beginTransaction();
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
+		
+		try{
+			ItemPedidoBO itemPedidoBO = new ItemPedidoBO();
+			List<ItemPedido> itensPedido = itemPedidoBO.listaItensPedidoProduto(prod);
+			
+			if(itensPedido != null && itensPedido.size() > 0){
+				retorno.setMensagem("ERRO: Não é excluir um produto que já possui pedidos.");
+				t.rollback();
+			}else{
+				dao.delete(prod);
+				t.commit();
+				retorno.setSucesso(true);
+				retorno.setMensagem("Produto excluido com sucesso!");
+			}
+			
+		}catch(Exception e){
+			t.rollback();
+		}
+		 
+		return retorno;
+		
 	}
 	
 }

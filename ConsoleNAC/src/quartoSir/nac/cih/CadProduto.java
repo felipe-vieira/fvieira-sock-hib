@@ -23,13 +23,14 @@ public class CadProduto {
 		// While que faz o formul�rio aparecer toda vez que uma execu��o
 		// terminar
 
-		while (!comando.equals("3")) {
+		while (!comando.equals("5")) {
 
 			System.out.println("");
 			System.out.println("> Selecione uma op��o: ");
 			System.out.println("> 1 - Cadastrar novo produto");
 			System.out.println("> 2 - Listar produto(s)");
-			System.out.println("> 3 - Voltar");
+			System.out.println("> 4 - Excluir produto");
+			System.out.println("> 5 - Voltar");
 
 			System.out.print("> ");
 
@@ -52,10 +53,9 @@ public class CadProduto {
 
 				// Tratamento para op��o incorreta
 
-			} else if (!comando.equals("3")) {
+			} else if (!comando.equals("5")) {
 				System.out.println("");
-				System.out
-						.println("> Mensagem inv�lida! Insira um valor de 1 a 3");
+				System.out.println("> Mensagem inv�lida! Insira um valor de 1 a 5");
 			}
 		}
 	}
@@ -229,144 +229,154 @@ public class CadProduto {
 		
 	}
 	
-	public Produto alterarProduto() {
+	public void alterarProduto() {
 
 		Produto prod = new Produto();
 		String comando = "";
+		Boolean sucesso = false;
+		
+		while(!sucesso){
 
-		// Solicita ao usu�rio o ID do produto para altera��o
-
-		System.out.println("");
-		System.out.println("> Digite o ID do produto que deseja alterar:");
-		System.out.print("> ");
-
-
-		try {
-			comando = reader.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// Seleciona qual coluna ser� atualizada
-
-		System.out.println("");
-		System.out
-				.println("> Selecione qual informa��o deste produto voc� deseja alterar:");
-		System.out.println("> 1) Descri��o");
-		System.out.println("> 2) Pre�o");
-		System.out.println("> 3) Estoque");
-		System.out.print("> ");
-
-
-		try {
-			comando = reader.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// Solicita ao usu�rio a nova descri��o do produto
-
-		if (comando.equals("1")) {
+			// Solicita ao usu�rio o ID do produto para altera��o
+	
 			System.out.println("");
-			System.out.println("> Digite a nova descri��o do produto: ");
+			System.out.println("> Digite o ID do produto que deseja alterar:");
 			System.out.print("> ");
-
-
+	
+	
 			try {
-				prod.setDescricao(reader.readLine());
+				comando = reader.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			// Solicita ao usu�rio o novo pre�o do produto
-
-		} else if (comando.equals("2")) {
+	
+			// Seleciona qual coluna ser� atualizada
+	
 			System.out.println("");
-			System.out.println("> Digite o novo pre�o do produto: ");
+			System.out.println("> Selecione qual informa��o deste produto voc� deseja alterar:");
+			System.out.println("> 1) Descri��o");
+			System.out.println("> 2) Pre�o");
+			System.out.println("> 3) Estoque");
 			System.out.print("> ");
-
-
-			// Tratamento para pre�o inv�lido
-
+	
+	
 			try {
-				if (Double.parseDouble(reader.readLine()) <= 0) {
-					System.out.println("");
-					System.out
-							.println("> Pre�o n�o pode ser menor ou igual a Zero.");
-					return null;
+				comando = reader.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	
+			// Solicita ao usu�rio a nova descri��o do produto
+	
+			if (comando.equals("1")) {
+				System.out.println("");
+				System.out.println("> Digite a nova descri��o do produto: ");
+				System.out.print("> ");
+	
+	
+				try {
+					prod.setDescricao(reader.readLine());
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+	
+				// Solicita ao usu�rio o novo pre�o do produto
+	
+			} else if (comando.equals("2")) {
+				System.out.println("");
+				System.out.println("> Digite o novo pre�o do produto: ");
+				System.out.print("> ");
+	
+	
+				// Tratamento para pre�o inv�lido
+	
+				try {
+					if (Double.parseDouble(reader.readLine()) <= 0) {
+						System.out.println("");
+						System.out
+								.println("> Pre�o n�o pode ser menor ou igual a Zero.");
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	
+				// Valida o tipo de dados do pre�o
+	
+				try {
+					prod.setPreco(BigDecimal.valueOf(Double.parseDouble(reader
+							.readLine())));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	
+				// Solicita ao usu�rio o novo estoque do produto
+	
+			} else if (comando.equals("3")) {
+				System.out.println("");
+				System.out.println("> Digite o novo estoque do produto: ");
+				System.out.print("> ");
+	
+	
+				try {
+					prod.setEstoque(Integer.parseInt(reader.readLine()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	
+				// Tratamento para op��o incorreta
+	
+			} else {
+				System.out.println("");
+				System.out.println("> Mensagem inv�lida! Insira um valor de 1 a 3");
 			}
-
-			// Valida o tipo de dados do pre�o
-
-			try {
-				prod.setPreco(BigDecimal.valueOf(Double.parseDouble(reader
-						.readLine())));
-			} catch (IOException e) {
-				e.printStackTrace();
+	
+			TransferObject to = new TransferObject("atualiza",prod);	
+			ReturnObject ro = ComunicacaoServidor.enviaDados(to);
+			
+			if(ro!=null){
+				sucesso = ro.getSucesso();
+				System.out.println(ro.getMensagem());
 			}
-
-			// Solicita ao usu�rio o novo estoque do produto
-
-		} else if (comando.equals("3")) {
+	
 			System.out.println("");
-			System.out.println("> Digite o novo estoque do produto: ");
-			System.out.print("> ");
-
-
-			try {
-				prod.setEstoque(Integer.parseInt(reader.readLine()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			// Tratamento para op��o incorreta
-
-		} else {
-			System.out.println("");
-			System.out.println("> Mensagem inv�lida! Insira um valor de 1 a 3");
-			return null;
+			System.out.println("> Produto " + prod.getId() + " alterado com sucesso!");
+	
 		}
-
-		// PARTE DO FELIPE
-
-		System.out.println("");
-		System.out.println("> Produto " + prod.getId()
-				+ " alterado com sucesso!");
-
-		return prod;
-
 	}
 
-	public Produto excluirProduto() {
+	public void excluirProduto() {
 
+		Boolean sucesso = false;
 		Produto prod = new Produto();
 		String comando = "";
+		
+		while(!sucesso){
 
-		// Solicita ao usu�rio o ID do produto para exclus�o
-
-		System.out.println("");
-		System.out.println("> Digite o ID do produto que deseja excluir:");
-		System.out.print("> ");
-
-
-		try {
-			comando = reader.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
+			// Solicita ao usu�rio o ID do produto para exclus�o
+	
+			System.out.println("");
+			System.out.println("> Digite o ID do produto que deseja excluir:");
+			System.out.print("> ");
+	
+	
+			try {
+				comando = reader.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	
+			prod.setId(Long.valueOf(comando));
+	
+			TransferObject to = new TransferObject("exclui",prod);				
+			ReturnObject ro = ComunicacaoServidor.enviaDados(to);
+			
+			if(ro!=null){
+				sucesso = ro.getSucesso();
+				System.out.println(ro.getMensagem());
+			}
+			
+			System.out.println("");
+			System.out.println("> Produto " +prod.getId()+" exclu�do com sucesso!");
 		}
-
-		prod.setId(Long.valueOf(comando));
-
-		// PARTE DO FELIPE
-
-		System.out.println("");
-		System.out.println("> Produto " + prod.getId()
-				+ " exclu�do com sucesso!");
-
-		return prod;
-
 	}
 }
