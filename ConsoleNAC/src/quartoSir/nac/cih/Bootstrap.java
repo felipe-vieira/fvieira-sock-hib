@@ -36,9 +36,6 @@ public class Bootstrap {
 			System.out.println("> 3 - Cadastro de Pedidos");
 			System.out.println("> 4 - Sair");
 			
-	
-	
-			System.out.print("> ");
 			try {
 			    comando = reader.readLine();
 			} catch (IOException e) {

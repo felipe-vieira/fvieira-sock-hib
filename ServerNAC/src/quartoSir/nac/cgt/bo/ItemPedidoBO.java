@@ -56,16 +56,19 @@ public class ItemPedidoBO {
 				return ro;
 			}
 			
+			
+			
 			BigDecimal valorTotal = this.calculaValorTotalItemPedido(item);
 			
 			item.setTotalDoItem(valorTotal);
-			
+			item.setPrecoUnitario(item.getProduto().getPreco());
 			dao.saveOrUpdate(item);
 			t.commit();
 			ro.setSucesso(true);
 			ro.setMensagem("Item de Pedido cadastrado com sucesso!");
 			
 		}catch(Exception e){
+			e.printStackTrace();
 			t.rollback();
 		}
 		
@@ -146,14 +149,14 @@ public class ItemPedidoBO {
 	public List<ItemPedido> listaItensPedidoPedido(Pedido pedido){
 		Session session = dao.getSession();
 		Transaction t = session.beginTransaction();
-		
 		try{
 			
 			if(pedido != null && pedido.getId() != null){
-				Query query = session.createQuery("FROM ItemPedido where pedido.id = :pedidoId");
+				Query query = session.createQuery("FROM ItemPedido where id.pedido.id = :pedidoId");
 				query.setLong("pedidoId", pedido.getId());
 				
 				List<ItemPedido> retorno = dao.queryList(query);
+				
 				t.commit();
 				return retorno;			
 				
@@ -164,6 +167,7 @@ public class ItemPedidoBO {
 			
 		}catch(Exception e){
 			t.rollback();
+			e.printStackTrace();
 			return null;
 		}	
 	}
@@ -179,19 +183,26 @@ public class ItemPedidoBO {
 		BigDecimal auxCem = new BigDecimal(100);
 		BigDecimal total = new BigDecimal(0);
 			
-		BigDecimal valorUni = item.getPrecoUnitario();
-		BigDecimal qtde = new BigDecimal(item.getQuantidade());
+		BigDecimal valorUni = item.getId().getProduto().getPreco();
+		
+		BigDecimal qtde = new BigDecimal(0);
+		
+		if(item.getQuantidade() != null){
+			qtde = new BigDecimal(item.getQuantidade());
+		}
+		
 		BigDecimal valorDesconto = new BigDecimal(0);
 		BigDecimal totalItem = new BigDecimal(0);
-			
-		if(item.getDesconto() != null){
-			valorDesconto = item.getDesconto().divide(auxCem).multiply(valorUni);
+		
+		if(item.getQuantidade() != null){
+			if(item.getDesconto() != null){
+				valorDesconto = item.getDesconto().divide(auxCem).multiply(valorUni);
+			}
+				
+			totalItem = valorUni.subtract(valorDesconto).multiply(qtde);
+							
+			total = total.add(totalItem);
 		}
-			
-		totalItem = valorUni.subtract(valorDesconto).multiply(qtde);
-						
-		total.add(totalItem);
-			
 		
 		return totalItem;
 		
@@ -213,14 +224,14 @@ public class ItemPedidoBO {
 		try{
 			
 			if(pedido != null && pedido.getId() != null){
-				Query query = session.createQuery("FROM ItemPedido where pedido.id = :pedidoId");
+				Query query = session.createQuery("FROM ItemPedido where id.pedido.id = :pedidoId");
 				query.setLong("pedidoId", pedido.getId());
 				
 				List<ItemPedido> itens = dao.queryList(query);
 				
 				for(ItemPedido item:itens){
 					
-					Produto produto = item.getProduto();
+					Produto produto = item.getId().getProduto();
 					if(produto.getEstoque() - item.getQuantidade() < 0){
 						item.setQuantidade(null);
 					} else if(item.getQuantidade() > 10) {
@@ -234,7 +245,7 @@ public class ItemPedidoBO {
 					item.setTotalDoItem(valorTotal);
 					
 					dao.update(item);
-					produtoBO.atualizaProduto(produto);
+					dao.update(produto);
 				}			
 				
 				
@@ -245,6 +256,7 @@ public class ItemPedidoBO {
 			}
 			
 		}catch(Exception e){
+			e.printStackTrace();
 			t.rollback();
 		}	
 		

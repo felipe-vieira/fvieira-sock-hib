@@ -6,6 +6,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
+import quartoSir.nac.bootstrap.Run;
+
 /**
  * O papel desta classe é vincular a aplicação à camada de persistência.
  * 
@@ -25,8 +27,12 @@ public class DBUtil {
 	 */
 	private static SessionFactory buildSessionFactory() {
 		try {
+			
+			String urlConexao = "jdbc:hsqldb:hsql://"+Run.enderecoBD+"/fiap";			
+			
 			Configuration configuration = new Configuration();
 			configuration.configure("resource/hibernate.cfg.xml");
+			configuration.setProperty("connection.url", urlConexao);
 			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();        
 			return configuration.buildSessionFactory(serviceRegistry);
 		} catch (Throwable ex) {

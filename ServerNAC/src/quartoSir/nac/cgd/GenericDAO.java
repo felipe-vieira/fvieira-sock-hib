@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import quartoSir.nac.domain.Cliente;
 import quartoSir.nac.util.cgd.DBUtil;
 
 public class GenericDAO {
@@ -75,7 +74,7 @@ public class GenericDAO {
 	 * @param obj
 	 */
 	public void update(Object obj){
-		this.session.update(obj);
+		this.session.merge(obj);
 	}
 
 	/**

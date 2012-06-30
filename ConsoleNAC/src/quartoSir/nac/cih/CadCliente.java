@@ -78,7 +78,6 @@ public class CadCliente {
 				//Solicita ao usu�rio o nome do cliente
 				System.out.println("");
 				System.out.println("> Digite o nome do cliente:");
-				System.out.print("> ");
 				
 				try{
 					comando = reader.readLine();
@@ -92,14 +91,12 @@ public class CadCliente {
 				
 				System.out.println("");
 				System.out.println("> Digite o CPF do cliente:");
-				System.out.print("> ");
 							
 				while(cpf == null){
 					try{
 						comando = reader.readLine();
 						cpf = new CPF(comando);
 					}catch (Exception e) {
-						System.out.println("");
 						System.out.println("> CPF inválido!, digite novamente: ");
 					}
 				}
@@ -188,23 +185,11 @@ public class CadCliente {
 					
 				}else if(comando.equals("3")){
 					
-					//Solicita ao usu�rio o CPF do cliente
-					
-					System.out.println("");
-					System.out.println("> Digite o CPF do cliente que deseja pesquisar:");
-					System.out.print("> ");
-					
-					
-					try{
-						comando = reader.readLine();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-					//Tratamento para CPF inválido
-					
+					//Solicita ao usu�rio o CPF do cliente					
 					while(cpf == null){
 						try{
+							System.out.println("> Digite o CPF do cliente que deseja pesquisar:");
+							comando = reader.readLine();
 							cpf = new CPF(comando);
 							cli.setCpf(cpf);
 							TransferObject to = new TransferObject("pesquisaCPF",cli);
@@ -213,7 +198,7 @@ public class CadCliente {
 						}catch (Exception e) {
 							cpf = null;
 							System.out.println("");
-							System.out.println("> CPF inválido!");
+							System.out.println("> CPF inválido");
 						}
 					}
 					
@@ -258,6 +243,7 @@ public class CadCliente {
 			String comando = "";
 			CPF cpf = null;
 			Boolean sucesso = false;
+			ReturnObject ro;
 			
 			while(!sucesso){
 			
@@ -269,10 +255,20 @@ public class CadCliente {
 				
 				try{
 					comando = reader.readLine();
+					cli.setId(Long.parseLong(comando));				
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				
+				TransferObject cliBusca = new TransferObject("pesquisaID",cli);
+				ro = ComunicacaoServidor.enviaDados(cliBusca);
+				
+				if(ro.getObj() != null){
+					cli = (Cliente) ro.getObj();
+				}else{
+					System.out.println("Não existe nenhum cliente com esse ID");
+					break;
+				}		
 				
 				//Solicita ao usu�rio qual coluna deseja alterar
 				
@@ -294,7 +290,6 @@ public class CadCliente {
 					
 					System.out.println("");
 					System.out.println("> Digite o novo nome do cliente: ");
-					System.out.print("> ");
 					
 					try{
 						cli.setNome(reader.readLine());
@@ -307,7 +302,6 @@ public class CadCliente {
 					
 					System.out.println("");
 					System.out.println("> Digite o novo CPF do cliente: ");
-					System.out.print("> ");
 					
 					//Tratamento para CPF inválido
 					
@@ -315,6 +309,7 @@ public class CadCliente {
 						try{
 							comando = reader.readLine();
 							cpf = new CPF(comando);
+							cli.setCpf(cpf);
 						}catch (Exception e) {
 							System.out.println("");
 							System.out.println("> CPF inválido!, digite novamente: ");
@@ -332,7 +327,7 @@ public class CadCliente {
 				}
 				
 				TransferObject to = new TransferObject("atualiza",cli);	
-				ReturnObject ro = ComunicacaoServidor.enviaDados(to);
+				ro = ComunicacaoServidor.enviaDados(to);
 				
 				if(ro!=null){
 					sucesso = ro.getSucesso();
@@ -340,7 +335,6 @@ public class CadCliente {
 				}
 				
 				System.out.println("");
-				System.out.println("> cliente " +cli.getId()+" alterado com sucesso!");
 				
 			}
 		}
@@ -376,10 +370,7 @@ public class CadCliente {
 					sucesso = ro.getSucesso();
 					System.out.println(ro.getMensagem());
 				}
-				
-				System.out.println("");
-				System.out.println("> Cliente " +cli.getId()+" exclu�do com sucesso!");
-				
+								
 		}
 	}
 }

@@ -7,10 +7,10 @@
 			<generator class="increment"/>
 		</id>
 		
-		<property name="dataEmissao" column="PED_DT_EMS" not-null="true"/>
-		<property name="dataProcessamento" column="PED_DT_PRO" not-null="false"/>
-		<property name="totalPedido" column="PED_TOT" not-null="false"/>
-		<many-to-one name="cliente" column="CLI_ID" not-null="true"/>
+		<property name="dataEmissao" column="PED_DT_EMS" not-null="true" type="date"/>
+		<property name="dataProcessamento" column="PED_DT_PRO" not-null="false" type="date"/>
+		<property name="totalPedido" column="PED_TOT" not-null="false" />
+		<many-to-one name="cliente" column="CLI_ID" not-null="true" lazy="false"/>
 		
 	</class>
 </hibernate-mapping>

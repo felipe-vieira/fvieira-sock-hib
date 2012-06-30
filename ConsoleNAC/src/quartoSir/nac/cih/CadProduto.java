@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.List;
 
-import quartoSir.nac.domain.Cliente;
 import quartoSir.nac.domain.Produto;
 import quartoSir.nac.domain.util.ReturnObject;
 import quartoSir.nac.domain.util.TransferObject;
@@ -29,6 +28,7 @@ public class CadProduto {
 			System.out.println("> Selecione uma op��o: ");
 			System.out.println("> 1 - Cadastrar novo produto");
 			System.out.println("> 2 - Listar produto(s)");
+			System.out.println("> 3 - Altera produto");
 			System.out.println("> 4 - Excluir produto");
 			System.out.println("> 5 - Voltar");
 
@@ -72,7 +72,6 @@ public class CadProduto {
 	
 			System.out.println("");
 			System.out.println("> Digite a descri��o do produto:");
-			System.out.print("> ");
 	
 			try {
 				comando = reader.readLine();
@@ -86,7 +85,6 @@ public class CadProduto {
 	
 			System.out.println("");
 			System.out.println("> Digite o pre�o do produto:");
-			System.out.print("> ");
 	
 			try {
 				comando = reader.readLine();
@@ -234,6 +232,7 @@ public class CadProduto {
 		Produto prod = new Produto();
 		String comando = "";
 		Boolean sucesso = false;
+		ReturnObject ro;
 		
 		while(!sucesso){
 
@@ -246,9 +245,20 @@ public class CadProduto {
 	
 			try {
 				comando = reader.readLine();
+				prod.setId(Long.parseLong(comando));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			TransferObject toBuscaProd = new TransferObject("pesquisaID", prod);
+			ro = ComunicacaoServidor.enviaDados(toBuscaProd);
+			
+			if(ro.getObj() != null){
+				prod = (Produto) ro.getObj();
+			}else{
+				System.out.println("Não existe nenhum produto com essa ID");
+				break;
+			}		
 	
 			// Seleciona qual coluna ser� atualizada
 	
@@ -289,22 +299,9 @@ public class CadProduto {
 	
 	
 				// Tratamento para pre�o inv�lido
-	
 				try {
-					if (Double.parseDouble(reader.readLine()) <= 0) {
-						System.out.println("");
-						System.out
-								.println("> Pre�o n�o pode ser menor ou igual a Zero.");
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-	
-				// Valida o tipo de dados do pre�o
-	
-				try {
-					prod.setPreco(BigDecimal.valueOf(Double.parseDouble(reader
-							.readLine())));
+					comando = reader.readLine();
+					prod.setPreco(new BigDecimal(Double.parseDouble(comando)));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -331,15 +328,13 @@ public class CadProduto {
 			}
 	
 			TransferObject to = new TransferObject("atualiza",prod);	
-			ReturnObject ro = ComunicacaoServidor.enviaDados(to);
+			ro = ComunicacaoServidor.enviaDados(to);
 			
 			if(ro!=null){
 				sucesso = ro.getSucesso();
 				System.out.println(ro.getMensagem());
 			}
 	
-			System.out.println("");
-			System.out.println("> Produto " + prod.getId() + " alterado com sucesso!");
 	
 		}
 	}
@@ -375,8 +370,6 @@ public class CadProduto {
 				System.out.println(ro.getMensagem());
 			}
 			
-			System.out.println("");
-			System.out.println("> Produto " +prod.getId()+" exclu�do com sucesso!");
 		}
 	}
 }

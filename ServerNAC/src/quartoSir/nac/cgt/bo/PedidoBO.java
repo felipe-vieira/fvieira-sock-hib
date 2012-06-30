@@ -1,6 +1,5 @@
 package quartoSir.nac.cgt.bo;
 
-import java.awt.ItemSelectable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +76,7 @@ public class PedidoBO {
 		ro.setSucesso(false);
 		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
 			if(pedido.getCliente() == null){
@@ -120,7 +119,7 @@ public class PedidoBO {
 		ro.setSucesso(false);
 		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
 			
@@ -162,7 +161,7 @@ public class PedidoBO {
 		ro.setSucesso(false);
 		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
 			if(pedido.getDataProcessamento() != null){
@@ -190,13 +189,15 @@ public class PedidoBO {
 	 * @param Cliente
 	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
 	 */
-	public ReturnObject listaPedidosClientes(Cliente cli){
+	public ReturnObject listaPedidosClientes(Pedido pedido){
 		
 		ReturnObject ro = new ReturnObject();
 		ro.setSucesso(false);
 		
+		Cliente cli = pedido.getCliente();
+		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
 			
@@ -233,13 +234,13 @@ public class PedidoBO {
 	 * @param Pedido
 	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
 	 */
-	public ReturnObject pegaPedidosID(Pedido pedido){
+	public ReturnObject pegaPedidoID(Pedido pedido){
 		
 		ReturnObject ro = new ReturnObject();
 		ro.setSucesso(false);
 		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
 			
@@ -250,18 +251,24 @@ public class PedidoBO {
 			}
 			
 			pedido = (Pedido) dao.getById(Pedido.class, pedido.getId());
-			t.commit();
 			
-			Integer qtde = this.calculaQuantidadeProdutosPedido(pedido);
-			pedido.setQtdProdutos(qtde);
-					
-			ro.setSucesso(true);
-			ro.setObj(pedido);
+			t.commit();
+						
+			if(pedido != null){
+				Integer qtde = this.calculaQuantidadeProdutosPedido(pedido);
+				pedido.setQtdProdutos(qtde);
+						
+				ro.setSucesso(true);
+				ro.setObj(pedido);
+			}else{
+				ro.setMensagem("Nenhum pedido com essa ID");
+			}
 			
 		
 		}catch(Exception e){
-			t.rollback();
 			e.printStackTrace();
+			t.rollback();
+			
 		}
 		
 		return ro;
@@ -272,15 +279,14 @@ public class PedidoBO {
 	 * Atualiza o total do pedido após a inclusão de itens ou processamento
 	 * @param Pedido
 	 */
-	private void atualizaTotalPedido(Pedido pedido){
+	public void atualizaTotalPedido(Pedido pedido){
 		ItemPedidoBO itemPedidoBO = new ItemPedidoBO();
-		List<ItemPedido> itens = itemPedidoBO.listaItensPedidoPedido(pedido);
+		BigDecimal valorTotal = this.calculaValorTotalPedido(pedido);
 		
 		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
+		Transaction t = session.beginTransaction();
 		
 		try{
-			BigDecimal valorTotal = this.calculaValorTotalPedido(pedido);
 			pedido.setTotalPedido(valorTotal);
 			dao.update(pedido);
 			t.commit();
@@ -305,8 +311,10 @@ public class PedidoBO {
 		
 		Integer qtde = 0;
 		
-		for(ItemPedido item:itens){
-			qtde += item.getQuantidade() == null ? 0:item.getQuantidade();
+		if(itens != null){
+			for(ItemPedido item:itens){
+				qtde += item.getQuantidade() == null ? 0:item.getQuantidade();
+			}
 		}
 		
 		return qtde;
@@ -325,7 +333,7 @@ public class PedidoBO {
 		BigDecimal total = new BigDecimal(0);
 	
 		for(ItemPedido item:itens){
-			total.add(item.getTotalDoItem());
+			total = total.add(item.getTotalDoItem());
 		}
 		
 		return total;
@@ -338,34 +346,39 @@ public class PedidoBO {
 	 * @return ReturnObject indica o status e a mensagem da operação 
 	 */
 	public ReturnObject processaPedido(Pedido pedido){
-		ItemPedidoBO itemBO = new ItemPedidoBO();
-		itemBO.processaItensPedido(pedido);
 		
-		BigDecimal valorTotal = this.calculaValorTotalPedido(pedido);
-		Integer qtde = this.calculaQuantidadeProdutosPedido(pedido);
-		
-		pedido.setDataProcessamento(new Date());
-		pedido.setQtdProdutos(qtde);
-		pedido.setTotalPedido(valorTotal);
-		
-		Session session = dao.getSession();
-		Transaction t = session.getTransaction();
 		
 		ReturnObject ro = new ReturnObject();
 		ro.setSucesso(false);
 		
-		try{
+		if(pedido.getDataProcessamento() == null){
+			ItemPedidoBO itemBO = new ItemPedidoBO();
+			itemBO.processaItensPedido(pedido);
+			
+			BigDecimal valorTotal = this.calculaValorTotalPedido(pedido);
+			pedido.setDataProcessamento(new Date());
+			
+			Session session = dao.getSession();
+			Transaction t = session.beginTransaction();
 
-			this.calculaValorTotalPedido(pedido);
-			dao.update(pedido);
-			ro.setSucesso(true);
-			ro.setMensagem("Pedido processado!");
-		}catch(Exception ex){
-			t.rollback();
+			
+			try{
+				dao.update(pedido);
+				t.commit();
+				
+				ro.setSucesso(true);
+				ro.setMensagem("Pedido processado!");
+				return ro;
+			}catch(Exception ex){
+				ex.printStackTrace();
+				t.rollback();
+				return ro;
+			}
+		}else{
+			ro.setMensagem("Pedido já processado");
 			return ro;
 		}
 		
-		return ro;
 	}
 	
 

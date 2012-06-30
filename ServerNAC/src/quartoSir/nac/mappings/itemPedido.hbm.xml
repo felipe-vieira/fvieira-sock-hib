@@ -8,7 +8,7 @@
 			<key-many-to-one name="produto" class="quartoSir.nac.domain.Produto" column="PRD_ID"/>
 		</composite-id>
 				
-		<property name="quantidade" column="ITM_PED_QTD" not-null="true"/>
+		<property name="quantidade" column="ITM_PED_QTD" not-null="false"/>
 		<property name="precoUnitario" column="ITM_PED_PRC" not-null="true"/>
 		<property name="totalDoItem" column="ITM_PED_TOT" not-null="true"/>
 		<property name="desconto" column="ITM_PED_DSC" not-null="false"/>

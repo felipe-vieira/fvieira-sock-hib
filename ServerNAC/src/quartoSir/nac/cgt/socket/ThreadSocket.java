@@ -7,8 +7,12 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import quartoSir.nac.cgt.bo.ClienteBO;
+import quartoSir.nac.cgt.bo.ItemPedidoBO;
+import quartoSir.nac.cgt.bo.PedidoBO;
 import quartoSir.nac.cgt.bo.ProdutoBO;
 import quartoSir.nac.domain.Cliente;
+import quartoSir.nac.domain.ItemPedido;
+import quartoSir.nac.domain.Pedido;
 import quartoSir.nac.domain.Produto;
 import quartoSir.nac.domain.util.ReturnObject;
 import quartoSir.nac.domain.util.TransferObject;
@@ -53,9 +57,11 @@ public class ThreadSocket implements Runnable {
 						retorno = this.trataObjetoRecebido((TransferObject) obj);
 					}
 					
-					out = new ObjectOutputStream(this.clientSocket.getOutputStream());
-					out.writeObject(retorno);
-					out.flush();
+					if(retorno != null){
+						out = new ObjectOutputStream(this.clientSocket.getOutputStream());
+						out.writeObject(retorno);
+						out.flush();
+					}
 					
 					in.close();
 					
@@ -116,6 +122,45 @@ public class ThreadSocket implements Runnable {
 				return bo.atualizaProduto(prod);
 			}else if(action.equals("exclui")){
 				return bo.excluiProduto(prod);
+			}
+			
+		}
+		
+		//Chama os métodos do BO de pedido
+		if(to.getValue() instanceof Pedido){
+
+			PedidoBO bo = new PedidoBO();
+			Pedido pedido = (Pedido) to.getValue();
+
+			if(action.equals("cadastro")){
+				return bo.salvaPedido(pedido);
+			}else if(action.equals("atualiza")){
+				return bo.atualizaPedido(pedido);
+			}else if(action.equals("exclui")){
+				return bo.excluiPedido(pedido);
+			}else if(action.equals("processa")){
+				return bo.processaPedido(pedido);
+			}else if(action.equals("calcula")){
+				bo.atualizaTotalPedido(pedido);
+				return null;
+			}else if(action.equals("pesquisaID")){
+				return bo.pegaPedidoID(pedido);
+			}else if(action.equals("pesquisaCliente")){
+				return bo.listaPedidosClientes(pedido);
+			}
+		}
+		
+		if(to.getValue() instanceof ItemPedido){
+			
+			ItemPedidoBO bo = new ItemPedidoBO();
+			
+			ItemPedido item = (ItemPedido) to.getValue();
+			if(action.equals("cadastro")){
+				return bo.salvaItemPedido(item);
+			}else if(action.equals("atualiza")){
+				return bo.salvaItemPedido(item);
+			}else if(action.equals("exclui")){
+				return bo.excluiItemPedido(item);
 			}
 			
 		}

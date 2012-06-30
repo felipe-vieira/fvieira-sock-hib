@@ -22,9 +22,9 @@ public class ClienteBO {
 	}
 	
 	/**
-	 * Realiza as validações e persiste os objetos no banco de dados.
+	 * Realiza as validacoes e persiste os objetos no banco de dados.
 	 * @param cli
-	 * @return ReturnObject indica o status e a mensagem da operação
+	 * @return ReturnObject indica o status e a mensagem da operacao
 	 */
 	public ReturnObject salvaCliente(Cliente cli) {
 		
@@ -39,7 +39,7 @@ public class ClienteBO {
 				
 				if(cli.getCpf() != null){
 					
-					//Verifica se já existe usuario com o CPF informado
+					//Verifica se ja existe usuario com o CPF informado
 					Query query = session.createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito");
 					query.setLong("numero", cli.getCpf().getNumero());
 					query.setInteger("digito", cli.getCpf().getDigito());
@@ -48,7 +48,7 @@ public class ClienteBO {
 					
 					if(listaCPF != null && listaCPF.size()>0){
 						retorno.setSucesso(false);
-						retorno.setMensagem("ERRO: O CPF já está em uso");
+						retorno.setMensagem("ERRO: O CPF ja esta em uso");
 						t.rollback();
 					}else{
 						dao.save(cli);
@@ -61,13 +61,13 @@ public class ClienteBO {
 					
 				}else{
 					retorno.setSucesso(false);
-					retorno.setMensagem("ERRO: O CPF é obrigatorio");
+					retorno.setMensagem("ERRO: O CPF e obrigatorio");
 					t.rollback();
 				}
 				
 			}else{
 				retorno.setSucesso(false);
-				retorno.setMensagem("ERRO: O nome do cliente não pode ser vazio");
+				retorno.setMensagem("ERRO: O nome do cliente nao pode ser vazio");
 				t.rollback();
 			}
 		}catch(Exception e){
@@ -81,7 +81,7 @@ public class ClienteBO {
 	/**
 	 * Pesquisa o cliente por CPF
 	 * @param cli
-	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 * @return ReturnList indica o retorno da pesquisa e o status da transacao, alem de mensagens de erro se existir.
 	 */
 	public ReturnObject pesquisaClienteCPF(Cliente cli){
 		ReturnObject retorno = new ReturnObject();
@@ -91,7 +91,7 @@ public class ClienteBO {
 		
 		try{
 			
-			if(cli.getCpf() != null){
+			if(cli.getCpf() != null && !cli.getCpf().equals("")){
 				
 				Query query = session.createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito");
 				query.setLong("numero", cli.getCpf().getNumero());
@@ -109,7 +109,7 @@ public class ClienteBO {
 				t.commit();
 				
 			}else{
-				retorno.setMensagem("ERRO: CPF não pode ser vazio para essa consulta");
+				retorno.setMensagem("ERRO: CPF nao pode ser vazio para essa consulta");
 				t.rollback();
 			}
 			
@@ -126,7 +126,7 @@ public class ClienteBO {
 	/**
 	 * Pesquisa o cliente por ID
 	 * @param cli
-	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 * @return ReturnList indica o retorno da pesquisa e o status da transacao, alem de mensagens de erro se existir.
 	 */
 	public ReturnObject pesquisaClienteID(Cliente cli){
 		ReturnObject retorno = new ReturnObject();
@@ -136,7 +136,7 @@ public class ClienteBO {
 		
 		try{
 			
-			if(cli.getId() != null){
+			if(cli.getId() != null && !cli.getId().equals("")){
 				
 				Cliente resultado = (Cliente) dao.getById(Cliente.class, cli.getId());
 				
@@ -144,13 +144,13 @@ public class ClienteBO {
 				if(resultado != null){
 					retorno.setObj(resultado);
 				}else{
-					retorno.setMensagem("Nenhum cliente encontrado com esse ID");
+					retorno.setMensagem("> Nenhum cliente encontrado com esse ID");
 				}
 				
 				t.commit();
 				
 			}else{
-				retorno.setMensagem("ERRO: ID não pode ser vazio para essa consulta");
+				retorno.setMensagem("ERRO: ID nao pode ser vazio para essa consulta");
 				t.rollback();
 			}
 			
@@ -165,14 +165,15 @@ public class ClienteBO {
 	/**
 	 * Pesquisa o cliente por Nome
 	 * @param cli
-	 * @return ReturnList indica o retorno da pesquisa e o status da transação, além de mensagens de erro se existir.
+	 * @return ReturnList indica o retorno da pesquisa e o status da transacao, alem de mensagens de erro se existir.
 	 */
 	public ReturnObject pesquisaClienteNome(Cliente cli){
 		ReturnObject retorno = new ReturnObject();
 		
 		Session session = dao.getSession(); 
 		Transaction t = session.beginTransaction(); 
-		
+	
+				
 		try{
 			
 			if(cli.getNome() != null && !cli.getNome().equals("")){
@@ -185,13 +186,13 @@ public class ClienteBO {
 				if(resultados != null && resultados.size() > 0){
 					retorno.setLista(resultados);
 				}else{
-					retorno.setMensagem("Nenhum cliente encontrado com esse NOME");
+					retorno.setMensagem("> Nenhum cliente encontrado com esse NOME");
 				}
 				
 				t.commit();
 				
 			}else{
-				retorno.setMensagem("ERRO: NOME não pode ser vazio para essa consulta");
+				retorno.setMensagem("ERRO: NOME nao pode ser vazio para essa consulta");
 				t.rollback();
 			}
 			
@@ -207,9 +208,12 @@ public class ClienteBO {
 	/**
 	 * Atualiza o cliente.
 	 * @param cli
-	 * @return ReturnObject indica o status e a mensagem da operação 
+	 * @return ReturnObject indica o status e a mensagem da operacao 
 	 */
 	public ReturnObject atualizaCliente(Cliente cli) {
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
 		
 		PedidoBO pedidoBO = new PedidoBO();
 		List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
@@ -217,28 +221,50 @@ public class ClienteBO {
 		Session session = dao.getSession();
 		Transaction t = session.beginTransaction();
 		
-		ReturnObject retorno = new ReturnObject();	
-		retorno.setSucesso(false);
-		
 		try{
-					
-			if(pedidos != null && pedidos.size() > 0){
-				Cliente cliAntigo = (Cliente) dao.getById(Cliente.class, cli.getId());
+			Cliente cliAntigo = (Cliente) dao.getById(Cliente.class, cli.getId());
+			
+			if(pedidos != null && pedidos.size()> 0){
+				if(!cli.getCpf().equals(cliAntigo.getCpf())){
+					retorno.setMensagem("ERRO: Não é possível alterar cpf de clientes que já tenham pedido");
+					return retorno;
+				}
+			}else if(cli.getCpf() != null){
 				
-				if(!cliAntigo.getCpf().equals(cli.getCpf())){
-					retorno.setMensagem("ERRO: Não é possível alterar o CPF de um cliente que já possui pedidos.");
+				Query query = session.createQuery("FROM Cliente WHERE cpf.numero = :numero AND cpf.digito = :digito" +
+												  "   AND id != :cliId");
+				
+				query.setLong("numero", cli.getCpf().getNumero());
+				query.setInteger("digito", cli.getCpf().getDigito());
+				query.setLong("cliId", cli.getId());
+				
+				List<Cliente> listaCPF = (List<Cliente>) dao.queryList(query);
+				
+				if(listaCPF != null && listaCPF.size()>0){
+					retorno.setMensagem("ERRO: O CPF ja esta em uso");
 					t.rollback();
 					return retorno;
-				}		
+				}
+	
+				
+			}else{
+				retorno.setMensagem("ERRO: O CPF é obrigatorio");
+				t.rollback();
+				return retorno;
 			}
 			
+			if(cli.getNome() == null || cli.getNome().equals("")){
+				retorno.setMensagem("ERRO: O NOME é obrigatorio");
+			}
+					
 			dao.update(cli);						
 			t.commit();
 					
 			retorno.setSucesso(true);
-			retorno.setMensagem("Cliente alterado");
+			retorno.setMensagem("> Cliente alterado");
 			
 		}catch(Exception e){
+			e.printStackTrace();
 			t.rollback();
 		}
 		 
@@ -250,9 +276,12 @@ public class ClienteBO {
 	/**
 	 * Deleta o cliente.
 	 * @param cli
-	 * @return ReturnObject indica o status e a mensagem da operação 
+	 * @return ReturnObject indica o status e a mensagem da operacao 
 	 */
 	public ReturnObject excluiCliente(Cliente cli) {
+		
+		ReturnObject retorno = new ReturnObject();	
+		retorno.setSucesso(false);
 		
 		PedidoBO pedidoBO = new PedidoBO();
 		List<Pedido> pedidos = pedidoBO.listaPedidosCliente(cli);
@@ -260,19 +289,25 @@ public class ClienteBO {
 		Session session = dao.getSession();
 		Transaction t = session.beginTransaction();
 		
-		ReturnObject retorno = new ReturnObject();	
-		retorno.setSucesso(false);
-		
-		try{			
-			if(pedidos != null && pedidos.size() > 0){
-				retorno.setMensagem("ERRO: Não é excluir um cliente que já possui pedidos.");
-				t.rollback();
+		try{
+
+			if(cli.getId() != null && !cli.getId().equals("")){
+				
+				if(pedidos != null && pedidos.size() > 0){
+					retorno.setMensagem("ERRO: Nao excluir um cliente que ja possui pedidos.");
+					t.rollback();
+				}else{
+					dao.delete(cli);
+					t.commit();
+					retorno.setSucesso(true);
+					retorno.setMensagem("> Cliente excluido com sucesso!");
+				}
+				
 			}else{
-				dao.delete(cli);
-				t.commit();
-				retorno.setSucesso(true);
-				retorno.setMensagem("Cliente excluido com sucesso!");
+				retorno.setMensagem("ERRO: ID nao pode ser vazio para essa consulta");
+				t.rollback();
 			}
+			
 			
 		}catch(Exception e){
 			t.rollback();

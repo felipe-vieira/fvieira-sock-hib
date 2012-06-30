@@ -24,4 +24,11 @@ public class ComunicacaoServidor {
 	}
 	
 	
+	public static void enviaDadosSemRetorno(TransferObject to){
+		SocketUtil socketUtil = new SocketUtil();
+		socketUtil.conectaSocket(Bootstrap.enderecoServidor);
+		socketUtil.enviaObjeto(to);
+	}
+	
+	
 }
